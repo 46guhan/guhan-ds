@@ -1,4 +1,4 @@
-import pymysql as mysql
+""" import pymysql as mysql
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -40,4 +40,57 @@ dfb=pd.DataFrame(b,columns=column)
 counts=[len(dfa),len(dfb)]
 label=["A letter names","B letter names"]
 plt.bar(label,counts)
-plt.show()
+plt.show() """
+
+import pymysql as mysql
+
+con=mysql.connect(host='localhost',user='root',password='livewire',database='company')
+cursor=con.cursor()
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS emp_details(
+               sno INT AUTO_INCREMENT PRIMARY KEY,
+               name VARCHAR(200),
+               email VARCHAR(250),
+               phone VARCHAR(100)) 
+""")
+cursor.execute("ALTER TABLE emp_details MODIFY COLUMN email VARCHAR(250) NULL")
+cursor.execute("ALTER TABLE emp_details MODIFY COLUMN phone VARCHAR(100) NULL")
+
+def insert_values(name,email,phone):
+    cursor.execute("INSERT INTO emp_details (name,email,phone) VALUES (%s,%s,%s)",(name,email,phone))
+    con.commit()
+    print("data inserted successfully")
+
+def show_data():
+    cursor.execute("select * from emp_details")
+    data=cursor.fetchall()
+    for i in data:
+        print(i)
+
+def get_data_by_phone(phone):
+    cursor.execute("select * from emp_details where phone=%s",(phone,))
+    print("successfully get the data")
+    data=cursor.fetchone()
+    print(data)
+
+def update_email(email,name):
+    cursor.execute("update emp_details set email=%s where name=%s",(email,name))
+    cursor.execute("select * from emp_details")
+    print("updated succesfully")
+    data=cursor.fetchall()
+    for i in data:
+        print(i)
+def delete_using_name(name):
+    cursor.execute("delete  from emp_details where name=%s",(name,))
+    print("deleted successfully")
+    cursor.execute("select * from emp_details")
+    data=cursor.fetchall()
+    for i in data:
+        print(i)
+
+# insert_values("hendry", "hen36@gmail.com", "6895346798")
+show_data()
+get_data_by_phone("1234567890")
+update_email('benjamin@gmail.com','ben ten')
+delete_using_name('ben ten')
